@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나미야 잡화점 - 밤하늘 아래 고민 상담소</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tone.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <!-- Google Fonts (Nanum Myeongjo & Gowun Batang for Warm Retro Feel) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        namiya: {
+                            bg: '#121826',
+                            card: '#1e2638',
+                            wood: '#8c5a3c',
+                            woodDark: '#5a3825',
+                            paper: '#fcf8ec',
+                            paperDark: '#eedfbe',
+                            ink: '#2b231d',
+                            accent: '#e2a355',
+                            warmRed: '#c85a4b',
+                            nightBlue: '#0d1322'
+                        }
+                    },
+                    fontFamily: {
+                        batang: ['"Gowun Batang"', 'serif'],
+                        myeongjo: ['"Nanum Myeongjo"', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Gowun Batang', serif;
+            background-color: #0d1322;
+            color: #fcf8ec;
+            background-image: radial-gradient(circle at 50% 30%, #1e2942 0%, #0d1322 70%);
+            min-height: 100vh;
+        }
+
+        /* Paper style textures & effects */
+        .paper-effect {
+            background-color: #fcf8ec;
+            background-image: radial-gradient(#efe4cc 1px, transparent 0);
+            background-size: 24px 24px;
+            color: #2b231d;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+        }
+
+        .paper-border {
+            border: 2px dashed #b89b72;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #121826;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #8c5a3c;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e2a355;
+        }
+
+        /* Glow & Atmosphere Animations */
+        @keyframes warmGlow {
+            0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 15px rgba(226, 163, 85, 0.4)); }
+            50% { opacity: 1; filter: drop-shadow(0 0 25px rgba(226, 163, 85, 0.7)); }
+        }
+        .lantern-glow {
+            animation: warmGlow 4s infinite ease-in-out;
+        }
+
+        /* Letter drop animation into mailbox */
+        @keyframes dropLetter {
+            0% { transform: translateY(-50px) scale(1) rotate(-5deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(120px) scale(0.2) rotate(15deg); opacity: 0; }
+        }
+        .anim-drop {
+            animation: dropLetter 1.2s forwards cubic-bezier(0.55, 0.055, 0.675, 0.19);
+        }
+
+        /* Shimmer loading for grandpa writing */
+        @keyframes writingDots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        .dots::after {
+            content: '';
+            animation: writingDots 1.5s infinite;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen relative overflow-x-hidden select-none">
+
+    <!-- Starry Night Background Decor -->
+    <div class="fixed inset-0 pointer-events-none opacity-40 z-0">
+        <div class="absolute top-10 left-[15%] text-amber-200 text-xs animate-pulse">★</div>
+        <div class="absolute top-24 left-[75%] text-amber-100 text-sm animate-pulse" style="animation-delay: 1s;">✦</div>
+        <div class="absolute top-40 left-[40%] text-amber-300 text-xs animate-pulse" style="animation-delay: 2s;">★</div>
+        <div class="absolute top-12 left-[85%] text-amber-200 text-xs animate-pulse" style="animation-delay: 1.5s;">✦</div>
+        <div class="absolute top-64 left-[10%] text-amber-100 text-xs animate-pulse" style="animation-delay: 0.7s;">★</div>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="relative z-10 border-b border-amber-900/40 bg-namiya-nightBlue/80 backdrop-blur-md px-4 py-4 sm:px-8">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('write')">
+                <div class="w-10 h-10 rounded-full bg-namiya-wood flex items-center justify-center text-amber-200 shadow-md border border-amber-600/50">
+                    <i class="fa-solid me-0 fa-store text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold font-myeongjo text-amber-100 tracking-wide">나미야 잡화점</h1>
+                    <p class="text-xs text-amber-300/70">밤 12시, 셔터 구멍에 고민을 넣어주세요</p>
+                </div>
+            </div>
+
+            <!-- Header Buttons & BGM Switcher -->
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <button id="bgmToggle" onclick="toggleBGM()" class="p-2.5 rounded-full bg-namiya-card border border-amber-700/40 text-amber-200 hover:bg-amber-900/40 transition text-sm flex items-center gap-2 px-3">
+                    <i id="bgmIcon" class="fa-solid fa-music"></i>
+                    <span id="bgmLabel" class="hidden sm:inline text-xs">잔잔한 음악</span>
+                </button>
+
+                <button onclick="switchTab('mailbox')" class="relative p-2.5 rounded-full bg-namiya-card border border-amber-700/40 text-amber-200 hover:bg-amber-900/40 transition text-sm flex items-center gap-2 px-3">
+                    <i class="fa-solid fa-box-archive"></i>
+                    <span class="hidden sm:inline text-xs">우유 상자 (답장함)</span>
+                    <span id="unreadBadge" class="hidden absolute -top-1 -right-1 bg-namiya-warmRed text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold animate-bounce">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="relative z-10 flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-center">
+
+        <!-- TAB 1: Write & Drop Letter (고민 쓰기) -->
+        <section id="tab-write" class="transition-all duration-500">
+            <!-- Store Atmosphere Illustration Header -->
+            <div class="mb-6 text-center space-y-2">
+                <div class="inline-block relative">
+                    <span class="lantern-glow text-amber-400 text-4xl block mb-1">🏮</span>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-myeongjo font-bold text-amber-100">어떤 고민이든 남겨주세요</h2>
+                <p class="text-amber-200/80 text-sm max-w-md mx-auto leading-relaxed">
+                    이름을 적지 않아도 괜찮습니다.<br/>
+                    새벽이 지나면 가게 뒤편 우유 상자에 답장이 도착해 있을 것입니다.
+                </p>
+            </div>
+
+            <!-- Letter Input Paper Form -->
+            <div class="paper-effect rounded-lg p-6 sm:p-8 max-w-2xl mx-auto border-2 border-amber-800/20 relative shadow-2xl">
+                <!-- Decorative stamp -->
+                <div class="absolute top-4 right-4 opacity-70 pointer-events-none">
+                    <div class="w-16 h-16 border-2 border-dashed border-red-800/60 rounded flex items-center justify-center rotate-6 text-red-900 font-bold text-xs p-1 text-center">
+                        나미야<br/>우편함
+                    </div>
+                </div>
+
+                <form id="letterForm" onsubmit="handleSendLetter(event)" class="space-y-5">
+                    <!-- Sender Nickname / Category -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-amber-900/80 mb-1">보내는 이 (별칭)</label>
+                            <input type="text" id="senderName" placeholder="예: 길 잃은 토끼, 달빛 팬클럽" required maxlength="20"
+                                class="w-full bg-amber-50/60 border-b-2 border-amber-800/40 focus:border-amber-900 text-amber-950 px-3 py-2 text-sm focus:outline-none transition rounded-t" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-amber-900/80 mb-1">고민 주제</label>
+                            <select id="letterCategory" class="w-full bg-amber-50/60 border-b-2 border-amber-800/40 focus:border-amber-900 text-amber-950 px-3 py-2 text-sm focus:outline-none transition rounded-t">
+                                <option value="진로 및 꿈">꿈과 미래 이야기</option>
+                                <option value="사랑 및 연애">마음속 연애/사랑 고민</option>
+                                <option value="인간관계">친구/가족/사람 사이의 일</option>
+                                <option value="학업 및 일">공부나 일터에서의 지침</option>
+                                <option value="기타 말못할 고민">누구에게도 못한 비밀 고민</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Letter Body -->
+                    <div>
+                        <label class="block text-xs font-bold text-amber-900/80 mb-1">나미야 할아버지에게 보낼 편지 내용</label>
+                        <textarea id="letterBody" rows="7" placeholder="할아버지, 요즘 제 마음은..." required minlength="10" maxlength="1500"
+                            class="w-full bg-amber-50/40 border border-amber-800/30 rounded p-4 text-amber-950 text-base leading-relaxed focus:outline-none focus:ring-2 focus:ring-amber-700/50 transition resize-none"></textarea>
+                        <div class="flex justify-between items-center text-xs text-amber-900/60 mt-1">
+                            <span>* 솔직하고 진심 어린 마음을 적어주세요.</span>
+                            <span id="charCount">0 / 1500자</span>
+                        </div>
+                    </div>
+
+                    <!-- Submit Action Button -->
+                    <div class="pt-2 flex flex-col items-center">
+                        <button type="submit" id="submitBtn" class="w-full sm:w-auto px-8 py-3 bg-namiya-wood hover:bg-namiya-woodDark text-amber-100 font-bold rounded-lg shadow-lg hover:shadow-xl transition transform active:scale-95 border border-amber-600 flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-paper-plane text-amber-300"></i>
+                            <span>셔터 우편함에 편지 넣기</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- TAB 2: Mailbox / Milk Box (답장함 목록 및 상세) -->
+        <section id="tab-mailbox" class="hidden transition-all duration-500">
+            <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-amber-800/30 pb-4">
+                <div>
+                    <h2 class="text-2xl font-myeongjo font-bold text-amber-100 flex items-center gap-2">
+                        <i class="fa-solid fa-box-open text-amber-400"></i>
+                        가게 뒤편 우유 상자
+                    </h2>
+                    <p class="text-amber-200/70 text-xs mt-1">나미야 잡화점 할아버지가 밤새 적어둔 답장 보관함입니다.</p>
+                </div>
+                <button onclick="switchTab('write')" class="text-xs bg-amber-900/40 border border-amber-600/40 text-amber-200 px-4 py-2 rounded-lg hover:bg-amber-800/50 transition">
+                    + 새 고민 편지 쓰기
+                </button>
+            </div>
+
+            <!-- Mail List Container -->
+            <div id="mailboxEmpty" class="text-center py-16 bg-namiya-card/50 rounded-lg border border-amber-900/30">
+                <i class="fa-regular fa-envelope-open text-5xl text-amber-400/40 mb-3"></i>
+                <p class="text-amber-200/80 font-myeongjo text-lg">아직 도착한 편지가 없습니다.</p>
+                <p class="text-amber-400/50 text-xs mt-1">고민을 셔터함에 넣어주시면 답장이 우유 상자에 담깁니다.</p>
+                <button onclick="switchTab('write')" class="mt-4 px-5 py-2 bg-namiya-wood text-amber-100 text-xs font-bold rounded hover:bg-namiya-woodDark transition">
+                    첫 고민 보내기
+                </button>
+            </div>
+
+            <div id="mailboxList" class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden">
+                <!-- Dynamically populated letters -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Interactive Dialog / Letter Modal for Reading Full Reply -->
+    <div id="letterModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="paper-effect max-w-2xl w-full max-h-[90vh] overflow-y-auto rounded-lg p-6 sm:p-8 relative shadow-2xl border-4 border-amber-800/30">
+            <!-- Close Modal Button -->
+            <button onclick="closeModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-amber-950/10 text-amber-900 hover:bg-amber-950/20 flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Sender Original Question Segment -->
+            <div class="border-b border-amber-900/20 pb-4 mb-5">
+                <div class="flex justify-between items-center text-xs text-amber-900/60 mb-2">
+                    <span id="modalCategory" class="px-2 py-0.5 bg-amber-200/80 rounded font-bold text-amber-950">카테고리</span>
+                    <span id="modalDate">2026.00.00</span>
+                </div>
+                <h3 class="text-lg font-bold text-amber-950 font-myeongjo mb-1">
+                    <span class="text-amber-800">To. 나미야 잡화점</span> 
+                    <span id="modalSender" class="text-xs font-normal text-amber-800/80 block mt-0.5">(From. 익명)</span>
+                </h3>
+                <p id="modalQuestion" class="text-sm text-amber-900/90 whitespace-pre-line leading-relaxed italic bg-amber-100/50 p-3 rounded mt-2 border-l-2 border-amber-700/40">
+                    원문 내용...
+                </p>
+            </div>
+
+            <!-- Grandpa Namiya's Warm Response Segment -->
+            <div class="space-y-3">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-full bg-namiya-wood flex items-center justify-center text-amber-200 font-bold text-xs">
+                        나
+                    </div>
+                    <h4 class="font-bold text-amber-950 font-myeongjo">나미야 할아버지의 답장</h4>
+                </div>
+                <div id="modalReply" class="text-amber-950 text-base leading-relaxed whitespace-pre-line font-myeongjo p-4 bg-amber-50/80 rounded border border-amber-800/20 shadow-inner">
+                    답장 내용...
+                </div>
+            </div>
+
+            <div class="mt-6 text-right">
+                <button onclick="closeModal()" class="px-6 py-2 bg-namiya-wood text-amber-100 text-xs font-bold rounded hover:bg-namiya-woodDark transition">
+                    우유 상자 닫기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Warning / Harm Prevention Alert Modal -->
+    <div id="harmAlertModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-namiya-card border-2 border-namiya-warmRed max-w-lg w-full rounded-xl p-6 sm:p-8 text-amber-100 text-center space-y-4 shadow-2xl">
+            <div class="w-16 h-16 bg-red-900/40 border border-red-500/50 rounded-full flex items-center justify-center mx-auto text-red-400 text-3xl">
+                <i class="fa-solid fa-heart-crack"></i>
+            </div>
+            <h3 class="text-xl font-bold font-myeongjo text-amber-100">당신의 이야기를 더 깊이 듣고 싶습니다</h3>
+            <p class="text-sm text-amber-200/90 leading-relaxed font-batang">
+                당신이 겪고 있는 고통과 마음의 짐이 얼마나 크고 힘들지 감히 다 헤아릴 수 없습니다.<br/>
+                하지만 혼자서 이 어둠을 전부 견디지 않으셨으면 합니다.
+            </p>
+            <div class="bg-amber-950/60 p-4 rounded-lg border border-amber-700/40 text-left text-xs space-y-2">
+                <p class="font-bold text-amber-300 text-sm">24시간 언제든 도울 준비가 된 전문가들이 있습니다:</p>
+                <div class="flex justify-between items-center py-1 border-b border-amber-800/40">
+                    <span>자살예방 상담전화</span>
+                    <a href="tel:109" class="font-bold text-amber-400 hover:underline">☎ 109</a>
+                </div>
+                <div class="flex justify-between items-center py-1 border-b border-amber-800/40">
+                    <span>정신건강 상담전화</span>
+                    <a href="tel:15770199" class="font-bold text-amber-400 hover:underline">☎ 1577-0199</a>
+                </div>
+                <div class="flex justify-between items-center py-1">
+                    <span>생명의 전화</span>
+                    <a href="tel:15889191" class="font-bold text-amber-400 hover:underline">☎ 1588-9191</a>
+                </div>
+            </div>
+            <p class="text-xs text-amber-300/70">
+                나미야 잡화점은 당신이 따뜻하고 안전하게 내일을 맞이하기를 진심으로 바랍니다.
+            </p>
+            <button onclick="closeHarmAlert()" class="w-full py-2.5 bg-namiya-warmRed hover:bg-red-700 text-white font-bold rounded-lg transition text-xs">
+                확인했습니다
+            </button>
+        </div>
+    </div>
+
+    <!-- Animated Loading Overlay during AI Generation -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="text-center space-y-4">
+            <div class="relative w-20 h-20 mx-auto">
+                <div class="absolute inset-0 rounded-full border-4 border-amber-600/30 animate-ping"></div>
+                <div class="w-20 h-20 bg-namiya-wood rounded-full flex items-center justify-center text-amber-200 text-3xl shadow-xl border-2 border-amber-400">
+                    <i class="fa-solid fa-pen-nib animate-bounce"></i>
+                </div>
+            </div>
+            <h3 class="text-xl font-myeongjo font-bold text-amber-100">
+                할아버지가 돋보기를 쓰고 편지를 읽고 계십니다<span class="dots"></span>
+            </h3>
+            <p class="text-xs text-amber-300/70 max-w-xs mx-auto leading-relaxed">
+                "어떤 조언이 이 사람에게 작은 촛불이 되어줄 수 있을까..."<br/>고심하며 답장을 써내려가고 있습니다.
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="relative z-10 border-t border-amber-900/30 py-4 text-center text-xs text-amber-400/50">
+        <p>© 나미야 잡화점의 기적 - 당신의 마음을 듣는 익명 고민 상담소</p>
+    </footer>
+
+    <!-- Application Script -->
+    <script>
+        // State management & LocalStorage Key
+        const STORAGE_KEY = 'namiya_letters_v1';
+        let letters = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        let isAudioPlaying = false;
+        let synth = null;
+        let bgmInterval = null;
+
+        // Banned words & Crisis Keywords (자극적 키워드 필터링)
+        const BANNED_KEYWORDS = [
+            '자살', '죽고싶', '죽고 싶', '극단적 선택', '목숨을 끊', '자해', 
+            '생을 마감', '살아갈 이유가 없', '죽는 방법', '죽어버리'
+        ];
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMailbox();
+            setupCharCounter();
+        });
+
+        // Character counter logic
+        function setupCharCounter() {
+            const textarea = document.getElementById('letterBody');
+            const counter = document.getElementById('charCount');
+            textarea.addEventListener('input', () => {
+                counter.textContent = `${textarea.value.length} / 1500자`;
+            });
+        }
+
+        // Switch navigation tabs
+        function switchTab(tabName) {
+            const writeTab = document.getElementById('tab-write');
+            const mailboxTab = document.getElementById('tab-mailbox');
+
+            if (tabName === 'write') {
+                writeTab.classList.remove('hidden');
+                mailboxTab.classList.add('hidden');
+            } else {
+                writeTab.classList.add('hidden');
+                mailboxTab.classList.remove('hidden');
+                renderMailbox();
+            }
+        }
+
+        // Check for banned/harmful content
+        function containsHarmfulContent(text) {
+            const cleanText = text.toLowerCase().replace(/\s+/g, ' ');
+            return BANNED_KEYWORDS.some(keyword => cleanText.includes(keyword));
+        }
+
+        // Handle letter submission
+        async function handleSendLetter(event) {
+            event.preventDefault();
+
+            const sender = document.getElementById('senderName').value.trim();
+            const category = document.getElementById('letterCategory').value;
+            const body = document.getElementById('letterBody').value.trim();
+
+            if (!sender || !body) return;
+
+            // 1. Check for harmful keywords first
+            if (containsHarmfulContent(body)) {
+                showHarmAlert();
+                return;
+            }
+
+            // 2. Play envelope drop sound effect using Tone.js
+            playDropSound();
+
+            // 3. Show Loading Animation
+            showLoading(true);
+
+            try {
+                // 4. Generate response via Gemini API
+                const replyText = await generateGrandpaReply(sender, category, body);
+
+                // 5. Store letter in LocalStorage
+                const newLetter = {
+                    id: Date.now(),
+                    sender: sender,
+                    category: category,
+                    body: body,
+                    reply: replyText,
+                    date: new Date().toLocaleDateString('ko-KR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }),
+                    read: false
+                };
+
+                letters.unshift(newLetter);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(letters));
+
+                // 6. Reset Form
+                document.getElementById('letterForm').reset();
+                document.getElementById('charCount').textContent = '0 / 1500자';
+
+                // 7. Hide Loading & Switch to Mailbox
+                showLoading(false);
+                switchTab('mailbox');
+                openModal(newLetter.id);
+
+            } catch (error) {
+                console.error("Gemini API Error:", error);
+                showLoading(false);
+                alert("답장을 작성하던 중 할아버지의 연필 심이 부러졌습니다. 잠시 후 다시 시도해 주세요.");
+            }
+        }
+
+        // Call Gemini API (Namiya Grandpa Persona)
+        async function generateGrandpaReply(sender, category, userQuery) {
+            const systemPrompt = `
+너는 히가시노 게이고의 소설 《나미야 잡화점의 기적》에 나오는 '나미야 잡화점의 나미야 야스오 할아버지'이다.
+너는 잡화점 셔터 우편함으로 들어온 고민 편지에 답장을 쓰는 중이다.
+
+말투 및 인격 지침:
+1. 상대를 부를 때는 '${sender} 님' 혹은 익명의 별칭으로 다정하고 중후하게 부른다.
+2. 할아버지 특유의 따뜻함, 지혜로움, 그리고 인생을 오래 살아본 이의 깊은 공감과 세심한 조언을 담는다.
+3. 무조건 정답을 내려주기보다 고민하는 사람의 마음을 있는 그대로 인정해주고 스스로 길을 찾도록 격려한다.
+4. "내가 살아보니...", "잡화점 문을 열고 수많은 고민을 받아보았지만...", "자네의 마음이 참 예쁘고 고맙네" 같은 소설 특유의 정겹고 은은한 시골 할아버지 어조(~하게, ~라네, ~했단다 등 문어체와 구어체의 조화)를 사용하라.
+5. 분량은 약 3~5단락으로 성의 있고 진솔하게 작성하라.
+6. 마지막은 "나미야 잡화점 주인이"라는 서명으로 따스하게 마무리하라.
+`;
+
+            const prompt = `[고민 분야: ${category}]\n보낸 이: ${sender}\n\n고민 내용:\n${userQuery}`;
+
+            // API Payload setup
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                }
+            };
+
+            const apiKey = ""; // Canvas runtime automatically supplies key if left blank
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+            const candidate = result.candidates?.[0];
+
+            if (candidate && candidate.content?.parts?.[0]?.text) {
+                return candidate.content.parts[0].text;
+            } else {
+                throw new Error("Invalid response format");
+            }
+        }
+
+        // Render Letters inside the Milk Box (Mailbox)
+        function renderMailbox() {
+            const listEl = document.getElementById('mailboxList');
+            const emptyEl = document.getElementById('mailboxEmpty');
+            const unreadBadge = document.getElementById('unreadBadge');
+
+            const unreadCount = letters.filter(l => !l.read).length;
+            if (unreadCount > 0) {
+                unreadBadge.textContent = unreadCount;
+                unreadBadge.classList.remove('hidden');
+            } else {
+                unreadBadge.classList.add('hidden');
+            }
+
+            if (letters.length === 0) {
+                listEl.classList.add('hidden');
+                emptyEl.classList.remove('hidden');
+                return;
+            }
+
+            emptyEl.classList.add('hidden');
+            listEl.classList.remove('hidden');
+            listEl.innerHTML = '';
+
+            letters.forEach(letter => {
+                const card = document.createElement('div');
+                card.className = `paper-effect rounded-lg p-5 border border-amber-800/30 cursor-pointer transition transform hover:-translate-y-1 hover:shadow-xl relative flex flex-col justify-between ${!letter.read ? 'ring-2 ring-amber-500' : ''}`;
+                card.onclick = () => openModal(letter.id);
+
+                card.innerHTML = `
+                    ${!letter.read ? '<span class="absolute top-3 right-3 text-[10px] bg-namiya-warmRed text-white font-bold px-2 py-0.5 rounded-full animate-pulse">새 답장</span>' : ''}
+                    <div>
+                        <div class="flex justify-between items-start text-xs text-amber-900/60 mb-2">
+                            <span class="font-bold text-amber-800 bg-amber-200/60 px-2 py-0.5 rounded">${letter.category}</span>
+                            <span class="text-[11px]">${letter.date.split('일')[0]}일</span>
+                        </div>
+                        <h4 class="font-bold text-amber-950 font-myeongjo text-base line-clamp-1 mb-1">
+                            To. 나미야 할아버지 (From. ${escapeHtml(letter.sender)})
+                        </h4>
+                        <p class="text-xs text-amber-900/80 line-clamp-2 leading-relaxed mb-3">
+                            "${escapeHtml(letter.body)}"
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-amber-900/10 flex items-center justify-between text-xs text-amber-800 font-bold">
+                        <span class="flex items-center gap-1">
+                            <i class="fa-solid fa-envelope-open-text text-amber-700"></i>
+                            할아버지의 답장 읽기
+                        </span>
+                        <i class="fa-solid fa-chevron-right text-xs text-amber-700"></i>
+                    </div>
+                `;
+                listEl.appendChild(card);
+            });
+        }
+
+        // Open Reading Modal
+        function openModal(id) {
+            const letter = letters.find(l => l.id === id);
+            if (!letter) return;
+
+            // Mark as read
+            letter.read = true;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(letters));
+            renderMailbox();
+
+            document.getElementById('modalCategory').textContent = letter.category;
+            document.getElementById('modalDate').textContent = letter.date;
+            document.getElementById('modalSender').textContent = `(보낸 이: ${letter.sender})`;
+            document.getElementById('modalQuestion').textContent = letter.body;
+            document.getElementById('modalReply').textContent = letter.reply;
+
+            const modal = document.getElementById('letterModal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('letterModal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        // Show Harm Alert
+        function showHarmAlert() {
+            const modal = document.getElementById('harmAlertModal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function closeHarmAlert() {
+            const modal = document.getElementById('harmAlertModal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        // Show/Hide Loading Overlay
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            if (show) {
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+            } else {
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        // Tone.js Sound Effects & Calm Background Music Synth
+        function playDropSound() {
+            try {
+                if (Tone && Tone.context.state !== 'running') {
+                    Tone.start();
+                }
+                const dropSynth = new Tone.MembraneSynth().toDestination();
+                dropSynth.triggerAttackRelease("C2", "8n");
+            } catch (e) {
+                console.log("Audio play error", e);
+            }
+        }
+
+        // Soft Music Box BGM Loop using Tone.js
+        function toggleBGM() {
+            const label = document.getElementById('bgmLabel');
+            const icon = document.getElementById('bgmIcon');
+
+            if (isAudioPlaying) {
+                if (bgmInterval) clearInterval(bgmInterval);
+                isAudioPlaying = false;
+                label.textContent = "잔잔한 음악";
+                icon.className = "fa-solid fa-music";
+            } else {
+                Tone.start();
+                isAudioPlaying = true;
+                label.textContent = "음악 끄기";
+                icon.className = "fa-solid fa-volume-high text-amber-400";
+
+                if (!synth) {
+                    synth = new Tone.PolySynth(Tone.Synth, {
+                        oscillator: { type: "sine" },
+                        envelope: { attack: 0.1, decay: 1.5, sustain: 0.2, release: 2 }
+                    }).toDestination();
+                    synth.volume.value = -18;
+                }
+
+                // Simple soothing music box pattern (Namiya Theme)
+                const notes = ["C4", "E4", "G4", "B4", "C5", "G4", "E4", "A4", "F4", "D4", "G4"];
+                let step = 0;
+                bgmInterval = setInterval(() => {
+                    if (isAudioPlaying && synth) {
+                        const note = notes[step % notes.length];
+                        synth.triggerAttackRelease(note, "4n");
+                        step++;
+                    }
+                }, 900);
+            }
+        }
+
+        // Helper: Utility to escape HTML strings
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, function(m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[m];
+            });
+        }
+    </script>
+</body>
+</html>
